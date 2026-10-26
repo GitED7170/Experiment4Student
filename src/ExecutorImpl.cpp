@@ -49,6 +49,28 @@ void TurnLeft(Pose& pose) noexcept
             break;
     }
 }
+
+/* 右转90度（顺时针），位置不变：E→S，W→N，N→E，S→W */
+void TurnRight(Pose& pose) noexcept
+{
+    switch (pose.heading)
+    {
+        case 'E':
+            pose.heading = 'S';
+            break;
+        case 'W':
+            pose.heading = 'N';
+            break;
+        case 'N':
+            pose.heading = 'E';
+            break;
+        case 'S':
+            pose.heading = 'W';
+            break;
+        default:
+            break;
+    }
+}
 }  // namespace
 
 ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : pose(pose)
@@ -71,6 +93,9 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
                 break;
             case 'L':
                 TurnLeft(pose);
+                break;
+            case 'R':
+                TurnRight(pose);
                 break;
             default:
                 break;
