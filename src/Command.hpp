@@ -1,38 +1,33 @@
 #pragma once
 
+#include "ActionGroup.hpp"
 #include "PoseHandler.hpp"
 
 namespace adas
 {
-// 命令对象只暴露行为，不暴露数据
+// 命令对象负责“编排”：根据执行器状态产生一组原子动作
 
 // 定义一个命令类 MoveCommand，完成 Move 动作（M 指令）
 class MoveCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
-        // 加速状态下执行两次移动（F 与 B 叠加时为两次后退）
+        ActionGroup actionGroup;
+
+        // 倒车状态决定前进还是后退
+        const auto action = poseHandler.IsReverse() ? ActionType::BACKWARD_1_STEP_ACTION
+                                                    : ActionType::FORWARD_1_STEP_ACTION;
+
+        // 加速状态下额外执行一次
         if (poseHandler.IsFast())
         {
-            if (poseHandler.IsReverse())
-            {
-                poseHandler.Backward();
-            }
-            else
-            {
-                poseHandler.Forward();
-            }
+            actionGroup.PushAction(action);
         }
+        // 无论是否加速，这一步必须执行
+        actionGroup.PushAction(action);
 
-        if (poseHandler.IsReverse())
-        {
-            poseHandler.Backward();
-        }
-        else
-        {
-            poseHandler.Forward();
-        }
+        return actionGroup;
     }
 };
 
@@ -40,30 +35,21 @@ public:
 class TurnLeftCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
-        // 加速状态下先移动一格（B 状态时是后退）
+        ActionGroup actionGroup;
+
+        // 加速状态下先移动一格
         if (poseHandler.IsFast())
         {
-            if (poseHandler.IsReverse())
-            {
-                poseHandler.Backward();
-            }
-            else
-            {
-                poseHandler.Forward();
-            }
+            actionGroup.PushAction(poseHandler.IsReverse() ? ActionType::BACKWARD_1_STEP_ACTION
+                                                          : ActionType::FORWARD_1_STEP_ACTION);
         }
-
         // 倒车状态下左右互换
-        if (poseHandler.IsReverse())
-        {
-            poseHandler.TurnRight();
-        }
-        else
-        {
-            poseHandler.TurnLeft();
-        }
+        actionGroup.PushAction(poseHandler.IsReverse() ? ActionType::REVERSE_TURNLEFT_ACTION
+                                                      : ActionType::TURNLEFT_ACTION);
+
+        return actionGroup;
     }
 };
 
@@ -71,30 +57,21 @@ public:
 class TurnRightCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
-        // 加速状态下先移动一格（B 状态时是后退）
+        ActionGroup actionGroup;
+
+        // 加速状态下先移动一格
         if (poseHandler.IsFast())
         {
-            if (poseHandler.IsReverse())
-            {
-                poseHandler.Backward();
-            }
-            else
-            {
-                poseHandler.Forward();
-            }
+            actionGroup.PushAction(poseHandler.IsReverse() ? ActionType::BACKWARD_1_STEP_ACTION
+                                                          : ActionType::FORWARD_1_STEP_ACTION);
         }
-
         // 倒车状态下左右互换
-        if (poseHandler.IsReverse())
-        {
-            poseHandler.TurnLeft();
-        }
-        else
-        {
-            poseHandler.TurnRight();
-        }
+        actionGroup.PushAction(poseHandler.IsReverse() ? ActionType::REVERSE_TURNRIGHT_ACTION
+                                                      : ActionType::TURNRIGHT_ACTION);
+
+        return actionGroup;
     }
 };
 
@@ -102,9 +79,10 @@ public:
 class FastCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
-        poseHandler.Fast();
+        (void)poseHandler;
+        return ActionGroup({ActionType::BE_FAST_ACTION});
     }
 };
 
@@ -112,9 +90,10 @@ public:
 class ReverseCommand final
 {
 public:
-    void operator()(PoseHandler& poseHandler) const noexcept
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
     {
-        poseHandler.Reverse();  // 切换倒车状态
+        (void)poseHandler;
+        return ActionGroup({ActionType::BE_REVERSE_ACTION});
     }
 };
 }  // namespace adas

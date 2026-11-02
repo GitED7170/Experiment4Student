@@ -25,7 +25,10 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
     const auto cmders = Singleton<CmderFactory>::Instance().GetCmders(commands);
 
     // 遍历命令列表里的每个命令 cmder
-    std::for_each(cmders.begin(), cmders.end(), [this](const Cmder& cmder) noexcept { cmder(poseHandler); });
+    std::for_each(cmders.begin(), cmders.end(), [this](const Cmder& cmder) noexcept {
+        // cmder(poseHandler) 返回 ActionGroup，再调用 DoOperate 批量执行
+        cmder(poseHandler).DoOperate(poseHandler);
+    });
 }
 
 Executor* Executor::NewExecutor(const Pose& pose) noexcept

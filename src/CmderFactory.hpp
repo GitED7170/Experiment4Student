@@ -10,7 +10,7 @@
 namespace adas
 {
 // 用 using 定义类型别名，替代冗长的 std::function / std::list 写法
-using Cmder = std::function<void(PoseHandler& poseHandler)>;
+using Cmder = std::function<ActionGroup(PoseHandler& poseHandler)>;
 using CmderList = std::list<Cmder>;
 
 class CmderFactory final
