@@ -3,6 +3,7 @@
 #include <functional>
 #include <list>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "Command.hpp"
@@ -27,12 +28,17 @@ public:
     CmderList GetCmders(const std::string& commands) const noexcept;
 
 private:
+    std::string ParseCommandString(std::string_view commands) const noexcept;
+    void ReplaceAll(std::string& inout, std::string_view what, std::string_view with) const noexcept;
+
+private:
     const std::unordered_map<char, Cmder> cmderMap{
         {'M', MoveCommand()},        // 前进
         {'L', TurnLeftCommand()},    // 左转
         {'R', TurnRightCommand()},   // 右转
         {'F', FastCommand()},        // 快速
         {'B', ReverseCommand()},     // 后退
+        {'Z', TurnRoundCommand()},   // 掉头（由 TR 替换而来）
     };
 };
 }  // namespace adas

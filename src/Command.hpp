@@ -75,6 +75,42 @@ public:
     }
 };
 
+// 定义一个命令类 TurnRoundCommand，完成掉头动作（TR 指令）
+class TurnRoundCommand final
+{
+public:
+    ActionGroup operator()(PoseHandler& poseHandler) const noexcept
+    {
+        // 倒车状态下，掉头指令被忽略
+        if (poseHandler.IsReverse())
+        {
+            return ActionGroup();
+        }
+        else
+        {
+            if (poseHandler.IsFast())
+            {
+                // 在F状态下，TR 需要四个原子 Action
+                return ActionGroup({
+                    ActionType::FORWARD_1_STEP_ACTION,  // 向前一步
+                    ActionType::TURNLEFT_ACTION,        // 左转
+                    ActionType::FORWARD_1_STEP_ACTION,  // 向前一步
+                    ActionType::TURNLEFT_ACTION,        // 左转
+                });
+            }
+            else
+            {
+                // 正常状态，TR 需要三个原子 Action
+                return ActionGroup({
+                    ActionType::TURNLEFT_ACTION,        // 左转
+                    ActionType::FORWARD_1_STEP_ACTION,  // 向前一步
+                    ActionType::TURNLEFT_ACTION,        // 左转
+                });
+            }
+        }
+    }
+};
+
 // 定义一个命令类 FastCommand，完成加速状态切换（F 指令）
 class FastCommand final
 {
