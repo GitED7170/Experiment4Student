@@ -5,7 +5,7 @@
 namespace adas
 {
 /* Executor接口的具体实现，维护汽车的当前姿态 */
-class ExecutorImpl : public Executor
+class ExecutorImpl final : public Executor
 {
 public:
     explicit ExecutorImpl(const Pose& pose) noexcept;
@@ -19,6 +19,9 @@ public:
 public:
     Pose Query(void) const noexcept override;
     void Execute(const std::string& commands) noexcept override;
+
+private:
+    void Move(void) noexcept;
 
 private:
     Pose pose;

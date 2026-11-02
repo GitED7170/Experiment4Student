@@ -6,28 +6,6 @@ namespace adas
 {
 namespace
 {
-/* 沿当前朝向前进一格：E=X+1，W=X-1，N=Y+1，S=Y-1 */
-void Move(Pose& pose) noexcept
-{
-    switch (pose.heading)
-    {
-        case 'E':
-            ++pose.x;
-            break;
-        case 'W':
-            --pose.x;
-            break;
-        case 'N':
-            ++pose.y;
-            break;
-        case 'S':
-            --pose.y;
-            break;
-        default:
-            break;
-    }
-}
-
 /* 左转90度（逆时针），位置不变：E→N，W→S，N→W，S→E */
 void TurnLeft(Pose& pose) noexcept
 {
@@ -82,6 +60,28 @@ Pose ExecutorImpl::Query(void) const noexcept
     return pose;
 }
 
+/* 沿当前朝向前进一格：E=X+1，W=X-1，N=Y+1，S=Y-1 */
+void ExecutorImpl::Move(void) noexcept
+{
+    switch (pose.heading)
+    {
+        case 'E':
+            ++pose.x;
+            break;
+        case 'W':
+            --pose.x;
+            break;
+        case 'N':
+            ++pose.y;
+            break;
+        case 'S':
+            --pose.y;
+            break;
+        default:
+            break;
+    }
+}
+
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const auto cmd : commands)
@@ -89,7 +89,7 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
         switch (cmd)
         {
             case 'M':
-                Move(pose);
+                Move();
                 break;
             case 'L':
                 TurnLeft(pose);
