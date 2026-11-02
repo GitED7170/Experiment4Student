@@ -1,6 +1,6 @@
 #include "ExecutorImpl.hpp"
 
-#include <memory>
+#include <functional>
 #include <new>
 #include <unordered_map>
 
@@ -19,16 +19,21 @@ Pose ExecutorImpl::Query(void) const noexcept
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
-    // 表驱动：建立“指令字符 -> 命令对象”的映射
-    std::unordered_map<char, std::unique_ptr<ICommand>> cmderMap;
-    // 建立操作 M 和前进指令的映射关系
-    cmderMap.emplace('M', std::make_unique<MoveCommand>());
-    // 建立操作 L 和左转指令的映射关系
-    cmderMap.emplace('L', std::make_unique<TurnLeftCommand>());
-    // 建立操作 R 和右转指令的映射关系
-    cmderMap.emplace('R', std::make_unique<TurnRightCommand>());
-    // 建立操作 F 和加速指令的映射关系
-    cmderMap.emplace('F', std::make_unique<FastCommand>());
+    // 表驱动：建立“指令字符 -> 可调用对象”的映射
+    std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap;
+
+    // 注意需要先初始化对象，再获取元素
+    MoveCommand moveCommand;
+    cmderMap.emplace('M', moveCommand.operate);
+
+    TurnLeftCommand turnLeftCommand;
+    cmderMap.emplace('L', turnLeftCommand.operate);
+
+    TurnRightCommand turnRightCommand;
+    cmderMap.emplace('R', turnRightCommand.operate);
+
+    FastCommand fastCommand;
+    cmderMap.emplace('F', fastCommand.operate);
 
     for (const auto cmd : commands)
     {
@@ -37,7 +42,7 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
         // 如果找到表驱动，执行操作对应的指令
         if (it != cmderMap.end())
         {
-            it->second->DoOperate(poseHandler);
+            it->second(poseHandler);  // 可以直接将其作为函数使用
         }
     }
 }
