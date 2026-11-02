@@ -80,6 +80,17 @@ void ExecutorImpl::TurnRight(void) noexcept
     }
 }
 
+/* 切换加速状态：每收到一次 F 取反 */
+void ExecutorImpl::Fast(void) noexcept
+{
+    fast = !fast;
+}
+
+bool ExecutorImpl::IsFast(void) const noexcept
+{
+    return fast;
+}
+
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const auto cmd : commands)
@@ -99,6 +110,10 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
         else if (cmd == 'R')
         {
             cmder = std::make_unique<TurnRightCommand>();
+        }
+        else if (cmd == 'F')
+        {
+            cmder = std::make_unique<FastCommand>();
         }
 
         if (cmder)

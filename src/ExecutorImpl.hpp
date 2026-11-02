@@ -37,6 +37,11 @@ private:
         void DoOperate(ExecutorImpl& executor) const noexcept override
         {
             executor.Move();
+            // 加速状态下多前进一格（仍然是一格一格移动）
+            if (executor.IsFast())
+            {
+                executor.Move();
+            }
         }
     };
 
@@ -46,6 +51,11 @@ private:
     public:
         void DoOperate(ExecutorImpl& executor) const noexcept override
         {
+            // 加速状态下先前进一格，再左转
+            if (executor.IsFast())
+            {
+                executor.Move();
+            }
             executor.TurnLeft();
         }
     };
@@ -56,7 +66,22 @@ private:
     public:
         void DoOperate(ExecutorImpl& executor) const noexcept override
         {
+            // 加速状态下先前进一格，再右转
+            if (executor.IsFast())
+            {
+                executor.Move();
+            }
             executor.TurnRight();
+        }
+    };
+
+    // 定义一个嵌套类 FastCommand，完成加速状态切换（F 指令）
+    class FastCommand final : public ICommand
+    {
+    public:
+        void DoOperate(ExecutorImpl& executor) const noexcept override
+        {
+            executor.Fast();
         }
     };
 
@@ -64,8 +89,11 @@ private:
     void Move(void) noexcept;
     void TurnLeft(void) noexcept;
     void TurnRight(void) noexcept;
+    void Fast(void) noexcept;          // 切换加速状态
+    bool IsFast(void) const noexcept;  // 查询当前是否处于加速状态
 
 private:
     Pose pose;
+    bool fast{false};  // 记录是否处于加速状态
 };
 }  // namespace adas
