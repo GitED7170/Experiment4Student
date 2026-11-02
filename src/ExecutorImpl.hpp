@@ -21,32 +21,40 @@ public:
     void Execute(const std::string& commands) noexcept override;
 
 private:
+    // 所有具体命令对象的抽象基类
+    class ICommand
+    {
+    public:
+        virtual ~ICommand() = default;
+        virtual void DoOperate(ExecutorImpl& executor) const noexcept = 0;
+    };
+
     // 定义一个嵌套类 MoveCommand，完成 Move 动作（M 指令）
-    class MoveCommand final
+    class MoveCommand final : public ICommand
     {
     public:
         // 执行 Move 动作，需要委托 ExecutorImpl& 执行器来完成动作
-        void DoOperate(ExecutorImpl& executor) const noexcept
+        void DoOperate(ExecutorImpl& executor) const noexcept override
         {
             executor.Move();
         }
     };
 
     // 定义一个嵌套类 TurnLeftCommand，完成 TurnLeft 动作（L 指令）
-    class TurnLeftCommand final
+    class TurnLeftCommand final : public ICommand
     {
     public:
-        void DoOperate(ExecutorImpl& executor) const noexcept
+        void DoOperate(ExecutorImpl& executor) const noexcept override
         {
             executor.TurnLeft();
         }
     };
 
     // 定义一个嵌套类 TurnRightCommand，完成 TurnRight 动作（R 指令）
-    class TurnRightCommand final
+    class TurnRightCommand final : public ICommand
     {
     public:
-        void DoOperate(ExecutorImpl& executor) const noexcept
+        void DoOperate(ExecutorImpl& executor) const noexcept override
         {
             executor.TurnRight();
         }

@@ -84,21 +84,26 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const auto cmd : commands)
     {
+        // 声明一个 ICommand 类型的智能指针
+        std::unique_ptr<ICommand> cmder;
+
         if (cmd == 'M')
         {
-            // 智能指针指向 MoveCommand 实例，不用担心 delete
-            std::unique_ptr<MoveCommand> cmder = std::make_unique<MoveCommand>();
-            // *this 就是 ExecutorImpl 实例对象，作为实参传递给 DoOperate
-            cmder->DoOperate(*this);  // 执行 MoveCommand 的 DoOperate，即 Move
+            // 智能指针指向子类 MoveCommand 实例
+            cmder = std::make_unique<MoveCommand>();
         }
         else if (cmd == 'L')
         {
-            std::unique_ptr<TurnLeftCommand> cmder = std::make_unique<TurnLeftCommand>();
-            cmder->DoOperate(*this);
+            cmder = std::make_unique<TurnLeftCommand>();
         }
         else if (cmd == 'R')
         {
-            std::unique_ptr<TurnRightCommand> cmder = std::make_unique<TurnRightCommand>();
+            cmder = std::make_unique<TurnRightCommand>();
+        }
+
+        if (cmder)
+        {
+            // 多态：cmder 指向不同子类实例，调用不同的命令
             cmder->DoOperate(*this);
         }
     }
