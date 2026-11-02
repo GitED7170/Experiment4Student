@@ -1,10 +1,11 @@
 #include "ExecutorImpl.hpp"
 
+#include <algorithm>
 #include <functional>
 #include <new>
-#include <unordered_map>
 
-#include "Command.hpp"
+#include "CmderFactory.hpp"
+#include "Singleton.hpp"
 
 namespace adas
 {
@@ -19,25 +20,14 @@ Pose ExecutorImpl::Query(void) const noexcept
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
-    // 表驱动：用初始化列表建立“指令字符 -> 可调用对象”的映射
-    std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap{
-        {'M', MoveCommand()},       // 前进
-        {'L', TurnLeftCommand()},   // 左转
-        {'R', TurnRightCommand()},  // 右转
-        {'F', FastCommand()},       // 快速
-        {'B', ReverseCommand()},    // 后退
-    };
+    // 使用指令工厂获取指令字符串对应的命令列表
+    // cmders 类型是 std::list<Cmder>
+    const auto cmders = Singleton<CmderFactory>::Instance().GetCmders(commands);
 
-    for (const auto cmd : commands)
-    {
-        // 根据操作查找表驱动
-        const auto it = cmderMap.find(cmd);
-        // 如果找到表驱动，执行操作对应的指令
-        if (it != cmderMap.end())
-        {
-            it->second(poseHandler);  // 可以直接将其作为函数使用
-        }
-    }
+    // 遍历命令列表里的每个命令 cmder
+    std::for_each(
+        cmders.begin(), cmders.end(),
+        [this](const std::function<void(PoseHandler& poseHandler)>& cmder) noexcept { cmder(poseHandler); });
 }
 
 Executor* Executor::NewExecutor(const Pose& pose) noexcept
