@@ -7,9 +7,14 @@ PoseHandler::PoseHandler(const Pose& pose) noexcept
 {
 }
 
-void PoseHandler::Move(void) noexcept
+void PoseHandler::Forward(void) noexcept
 {
     point += facing->Move();
+}
+
+void PoseHandler::Backward(void) noexcept
+{
+    point -= facing->Move();
 }
 
 void PoseHandler::TurnLeft(void) noexcept
@@ -31,6 +36,17 @@ void PoseHandler::Fast(void) noexcept
 bool PoseHandler::IsFast(void) const noexcept
 {
     return fast;
+}
+
+/* 切换倒车状态：每收到一次 B 取反 */
+void PoseHandler::Reverse(void) noexcept
+{
+    reverse = !reverse;
+}
+
+bool PoseHandler::IsReverse(void) const noexcept
+{
+    return reverse;
 }
 
 Pose PoseHandler::Query(void) const noexcept

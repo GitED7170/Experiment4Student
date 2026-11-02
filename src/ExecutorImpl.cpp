@@ -25,6 +25,7 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
         {'L', TurnLeftCommand()},   // 左转
         {'R', TurnRightCommand()},  // 右转
         {'F', FastCommand()},       // 快速
+        {'B', ReverseCommand()},    // 后退
     };
 
     for (const auto cmd : commands)

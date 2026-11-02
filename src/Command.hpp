@@ -4,8 +4,7 @@
 
 namespace adas
 {
-// 用 operator() 重载替代 std::function 成员：
-// 命令对象只暴露行为，不暴露数据，恢复封装性
+// 命令对象只暴露行为，不暴露数据
 
 // 定义一个命令类 MoveCommand，完成 Move 动作（M 指令）
 class MoveCommand final
@@ -13,11 +12,27 @@ class MoveCommand final
 public:
     void operator()(PoseHandler& poseHandler) const noexcept
     {
+        // 加速状态下执行两次移动（F 与 B 叠加时为两次后退）
         if (poseHandler.IsFast())
         {
-            poseHandler.Move();  // 如果是F状态，多执行一次MOVE
+            if (poseHandler.IsReverse())
+            {
+                poseHandler.Backward();
+            }
+            else
+            {
+                poseHandler.Forward();
+            }
         }
-        poseHandler.Move();      // 通过状态管理器完成 Move 动作
+
+        if (poseHandler.IsReverse())
+        {
+            poseHandler.Backward();
+        }
+        else
+        {
+            poseHandler.Forward();
+        }
     }
 };
 
@@ -27,12 +42,28 @@ class TurnLeftCommand final
 public:
     void operator()(PoseHandler& poseHandler) const noexcept
     {
-        // 加速状态下先前进一格，再左转
+        // 加速状态下先移动一格（B 状态时是后退）
         if (poseHandler.IsFast())
         {
-            poseHandler.Move();
+            if (poseHandler.IsReverse())
+            {
+                poseHandler.Backward();
+            }
+            else
+            {
+                poseHandler.Forward();
+            }
         }
-        poseHandler.TurnLeft();
+
+        // 倒车状态下左右互换
+        if (poseHandler.IsReverse())
+        {
+            poseHandler.TurnRight();
+        }
+        else
+        {
+            poseHandler.TurnLeft();
+        }
     }
 };
 
@@ -42,12 +73,28 @@ class TurnRightCommand final
 public:
     void operator()(PoseHandler& poseHandler) const noexcept
     {
-        // 加速状态下先前进一格，再右转
+        // 加速状态下先移动一格（B 状态时是后退）
         if (poseHandler.IsFast())
         {
-            poseHandler.Move();
+            if (poseHandler.IsReverse())
+            {
+                poseHandler.Backward();
+            }
+            else
+            {
+                poseHandler.Forward();
+            }
         }
-        poseHandler.TurnRight();
+
+        // 倒车状态下左右互换
+        if (poseHandler.IsReverse())
+        {
+            poseHandler.TurnLeft();
+        }
+        else
+        {
+            poseHandler.TurnRight();
+        }
     }
 };
 
@@ -58,6 +105,16 @@ public:
     void operator()(PoseHandler& poseHandler) const noexcept
     {
         poseHandler.Fast();
+    }
+};
+
+// 定义一个命令类 ReverseCommand，完成倒车状态切换（B 指令）
+class ReverseCommand final
+{
+public:
+    void operator()(PoseHandler& poseHandler) const noexcept
+    {
+        poseHandler.Reverse();  // 切换倒车状态
     }
 };
 }  // namespace adas
