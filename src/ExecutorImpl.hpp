@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Executor.hpp"
+#include "PoseHandler.hpp"
 
 namespace adas
 {
-/* Executor接口的具体实现，维护汽车的当前姿态 */
+/* Executor接口的具体实现，只保留对外接口，状态交由 PoseHandler 管理 */
 class ExecutorImpl final : public Executor
 {
 public:
@@ -20,16 +21,7 @@ public:
     Pose Query(void) const noexcept override;
     void Execute(const std::string& commands) noexcept override;
 
-public:
-    // 这些状态操作暂时公开，供 Command.hpp 中的命令类委托调用
-    void Move(void) noexcept;          // 执行M指令的逻辑现在封装在函数Move里
-    void TurnLeft(void) noexcept;      // 执行L指令的逻辑现在封装在函数TurnLeft里
-    void TurnRight(void) noexcept;     // 执行R指令的逻辑现在封装在函数TurnRight里
-    void Fast(void) noexcept;          // 切换加速状态
-    bool IsFast(void) const noexcept;  // 查询当前是否处于加速状态
-
 private:
-    Pose pose;
-    bool fast{false};  // 记录是否处于加速状态
+    PoseHandler poseHandler;  // 状态管理类
 };
 }  // namespace adas

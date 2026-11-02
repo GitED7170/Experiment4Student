@@ -7,90 +7,13 @@
 
 namespace adas
 {
-ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : pose(pose)
+ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : poseHandler(pose)
 {
 }
 
 Pose ExecutorImpl::Query(void) const noexcept
 {
-    return pose;
-}
-
-/* 沿当前朝向前进一格：E=X+1，W=X-1，N=Y+1，S=Y-1 */
-void ExecutorImpl::Move(void) noexcept
-{
-    switch (pose.heading)
-    {
-        case 'E':
-            ++pose.x;
-            break;
-        case 'W':
-            --pose.x;
-            break;
-        case 'N':
-            ++pose.y;
-            break;
-        case 'S':
-            --pose.y;
-            break;
-        default:
-            break;
-    }
-}
-
-/* 左转90度（逆时针），位置不变：E→N，W→S，N→W，S→E */
-void ExecutorImpl::TurnLeft(void) noexcept
-{
-    switch (pose.heading)
-    {
-        case 'E':
-            pose.heading = 'N';
-            break;
-        case 'W':
-            pose.heading = 'S';
-            break;
-        case 'N':
-            pose.heading = 'W';
-            break;
-        case 'S':
-            pose.heading = 'E';
-            break;
-        default:
-            break;
-    }
-}
-
-/* 右转90度（顺时针），位置不变：E→S，W→N，N→E，S→W */
-void ExecutorImpl::TurnRight(void) noexcept
-{
-    switch (pose.heading)
-    {
-        case 'E':
-            pose.heading = 'S';
-            break;
-        case 'W':
-            pose.heading = 'N';
-            break;
-        case 'N':
-            pose.heading = 'E';
-            break;
-        case 'S':
-            pose.heading = 'W';
-            break;
-        default:
-            break;
-    }
-}
-
-/* 切换加速状态：每收到一次 F 取反 */
-void ExecutorImpl::Fast(void) noexcept
-{
-    fast = !fast;
-}
-
-bool ExecutorImpl::IsFast(void) const noexcept
-{
-    return fast;
+    return poseHandler.Query();
 }
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
@@ -121,7 +44,7 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
         if (cmder)
         {
             // 多态：cmder 指向不同子类实例，调用不同的命令
-            cmder->DoOperate(*this);
+            cmder->DoOperate(poseHandler);
         }
     }
 }
