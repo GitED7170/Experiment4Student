@@ -9,6 +9,10 @@
 
 namespace adas
 {
+// 用 using 定义类型别名，替代冗长的 std::function / std::list 写法
+using Cmder = std::function<void(PoseHandler& poseHandler)>;
+using CmderList = std::list<Cmder>;
+
 class CmderFactory final
 {
 public:
@@ -20,10 +24,10 @@ public:
     CmderFactory& operator=(const CmderFactory&) = delete;
 
 public:
-    std::list<std::function<void(PoseHandler&)>> GetCmders(const std::string& commands) const noexcept;
+    CmderList GetCmders(const std::string& commands) const noexcept;
 
 private:
-    const std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap{
+    const std::unordered_map<char, Cmder> cmderMap{
         {'M', MoveCommand()},        // 前进
         {'L', TurnLeftCommand()},    // 左转
         {'R', TurnRightCommand()},   // 右转

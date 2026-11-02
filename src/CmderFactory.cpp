@@ -2,9 +2,9 @@
 
 namespace adas
 {
-std::list<std::function<void(PoseHandler&)>> CmderFactory::GetCmders(const std::string& commands) const noexcept
+CmderList CmderFactory::GetCmders(const std::string& commands) const noexcept
 {
-    std::list<std::function<void(PoseHandler&)>> cmders;
+    CmderList cmders;
     for (const auto cmd : commands)
     {
         const auto it = cmderMap.find(cmd);
