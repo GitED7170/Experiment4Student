@@ -4,31 +4,6 @@
 
 namespace adas
 {
-namespace
-{
-/* 右转90度（顺时针），位置不变：E→S，W→N，N→E，S→W */
-void TurnRight(Pose& pose) noexcept
-{
-    switch (pose.heading)
-    {
-        case 'E':
-            pose.heading = 'S';
-            break;
-        case 'W':
-            pose.heading = 'N';
-            break;
-        case 'N':
-            pose.heading = 'E';
-            break;
-        case 'S':
-            pose.heading = 'W';
-            break;
-        default:
-            break;
-    }
-}
-}  // namespace
-
 ExecutorImpl::ExecutorImpl(const Pose& pose) noexcept : pose(pose)
 {
 }
@@ -82,6 +57,28 @@ void ExecutorImpl::TurnLeft(void) noexcept
     }
 }
 
+/* 右转90度（顺时针），位置不变：E→S，W→N，N→E，S→W */
+void ExecutorImpl::TurnRight(void) noexcept
+{
+    switch (pose.heading)
+    {
+        case 'E':
+            pose.heading = 'S';
+            break;
+        case 'W':
+            pose.heading = 'N';
+            break;
+        case 'N':
+            pose.heading = 'E';
+            break;
+        case 'S':
+            pose.heading = 'W';
+            break;
+        default:
+            break;
+    }
+}
+
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const auto cmd : commands)
@@ -95,7 +92,7 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
                 TurnLeft();
                 break;
             case 'R':
-                TurnRight(pose);
+                TurnRight();
                 break;
             default:
                 break;
