@@ -3,15 +3,7 @@
 #include <memory>
 
 #include "Executor.hpp"
-
-namespace adas
-{
-// ASSERT_EQ内部调用了重载的Pose的==，工程模板未提供，按需求在测试文件中补充
-bool operator==(const Pose& lhs, const Pose& rhs) noexcept
-{
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.heading == rhs.heading;
-}
-}  // namespace adas
+#include "PoseEq.hpp"
 
 using adas::Executor;
 using adas::Pose;
