@@ -1,5 +1,6 @@
 #include "ExecutorImpl.hpp"
 
+#include <memory>
 #include <new>
 
 namespace adas
@@ -83,19 +84,20 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     for (const auto cmd : commands)
     {
-        switch (cmd)
+        if (cmd == 'M')
         {
-            case 'M':
-                Move();
-                break;
-            case 'L':
-                TurnLeft();
-                break;
-            case 'R':
-                TurnRight();
-                break;
-            default:
-                break;
+            // 智能指针指向 MoveCommand 实例，不用担心 delete
+            std::unique_ptr<MoveCommand> cmder = std::make_unique<MoveCommand>();
+            // *this 就是 ExecutorImpl 实例对象，作为实参传递给 DoOperate
+            cmder->DoOperate(*this);  // 执行 MoveCommand 的 DoOperate，即 Move
+        }
+        else if (cmd == 'L')
+        {
+            TurnLeft();
+        }
+        else if (cmd == 'R')
+        {
+            TurnRight();
         }
     }
 }

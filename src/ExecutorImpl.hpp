@@ -21,6 +21,18 @@ public:
     void Execute(const std::string& commands) noexcept override;
 
 private:
+    // 定义一个嵌套类 MoveCommand，完成 Move 动作（M 指令）
+    class MoveCommand final
+    {
+    public:
+        // 执行 Move 动作，需要委托 ExecutorImpl& 执行器来完成动作
+        void DoOperate(ExecutorImpl& executor) const noexcept
+        {
+            executor.Move();
+        }
+    };
+
+private:
     void Move(void) noexcept;
     void TurnLeft(void) noexcept;
     void TurnRight(void) noexcept;
