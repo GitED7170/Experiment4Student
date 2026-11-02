@@ -19,12 +19,13 @@ Pose ExecutorImpl::Query(void) const noexcept
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
-    // 表驱动：建立“指令字符 -> 可调用对象”的映射
-    std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap;
-    cmderMap.emplace('M', MoveCommand());       // 前进
-    cmderMap.emplace('L', TurnLeftCommand());   // 左转
-    cmderMap.emplace('R', TurnRightCommand());  // 右转
-    cmderMap.emplace('F', FastCommand());       // 快速
+    // 表驱动：用初始化列表建立“指令字符 -> 可调用对象”的映射
+    std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap{
+        {'M', MoveCommand()},       // 前进
+        {'L', TurnLeftCommand()},   // 左转
+        {'R', TurnRightCommand()},  // 右转
+        {'F', FastCommand()},       // 快速
+    };
 
     for (const auto cmd : commands)
     {
