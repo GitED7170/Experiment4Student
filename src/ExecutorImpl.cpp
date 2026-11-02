@@ -21,19 +21,10 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
     // 表驱动：建立“指令字符 -> 可调用对象”的映射
     std::unordered_map<char, std::function<void(PoseHandler&)>> cmderMap;
-
-    // 注意需要先初始化对象，再获取元素
-    MoveCommand moveCommand;
-    cmderMap.emplace('M', moveCommand.operate);
-
-    TurnLeftCommand turnLeftCommand;
-    cmderMap.emplace('L', turnLeftCommand.operate);
-
-    TurnRightCommand turnRightCommand;
-    cmderMap.emplace('R', turnRightCommand.operate);
-
-    FastCommand fastCommand;
-    cmderMap.emplace('F', fastCommand.operate);
+    cmderMap.emplace('M', MoveCommand());       // 前进
+    cmderMap.emplace('L', TurnLeftCommand());   // 左转
+    cmderMap.emplace('R', TurnRightCommand());  // 右转
+    cmderMap.emplace('F', FastCommand());       // 快速
 
     for (const auto cmd : commands)
     {
