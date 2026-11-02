@@ -42,6 +42,16 @@ private:
         }
     };
 
+    // 定义一个嵌套类 TurnRightCommand，完成 TurnRight 动作（R 指令）
+    class TurnRightCommand final
+    {
+    public:
+        void DoOperate(ExecutorImpl& executor) const noexcept
+        {
+            executor.TurnRight();
+        }
+    };
+
 private:
     void Move(void) noexcept;
     void TurnLeft(void) noexcept;
