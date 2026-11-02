@@ -1,15 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include "Executor.hpp"
+#include "cmder/CmderOrchestrator.hpp"
 #include "core/PoseHandler.hpp"
 
 namespace adas
 {
-/* Executor接口的具体实现，只保留对外接口，状态交由 PoseHandler 管理 */
+/* Executor接口的具体实现，状态与车型编排分别由 PoseHandler / CmderOrchestrator 负责 */
 class ExecutorImpl final : public Executor
 {
 public:
-    explicit ExecutorImpl(const Pose& pose) noexcept;
+    explicit ExecutorImpl(const Pose& pose, CmderOrchestrator* orchestrator) noexcept;
     ~ExecutorImpl() noexcept = default;
 
     // 不允许拷贝
@@ -22,6 +25,7 @@ public:
     void Execute(const std::string& commands) noexcept override;
 
 private:
-    PoseHandler poseHandler;  // 状态管理类
+    PoseHandler poseHandler;
+    std::unique_ptr<CmderOrchestrator> orchestrator;
 };
 }  // namespace adas

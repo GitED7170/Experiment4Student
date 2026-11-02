@@ -30,6 +30,8 @@ public:
     void PushAction(const ActionType ActionType) noexcept;
     void DoOperate(PoseHandler& poseHandler) const noexcept;
 
+    ActionGroup& operator+=(const ActionGroup& rhs) noexcept;
+
 private:
     std::list<ActionType> actions;
 };
