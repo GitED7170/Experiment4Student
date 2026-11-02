@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <new>
+#include <unordered_map>
 
 #include "Command.hpp"
 
@@ -18,33 +19,25 @@ Pose ExecutorImpl::Query(void) const noexcept
 
 void ExecutorImpl::Execute(const std::string& commands) noexcept
 {
+    // 表驱动：建立“指令字符 -> 命令对象”的映射
+    std::unordered_map<char, std::unique_ptr<ICommand>> cmderMap;
+    // 建立操作 M 和前进指令的映射关系
+    cmderMap.emplace('M', std::make_unique<MoveCommand>());
+    // 建立操作 L 和左转指令的映射关系
+    cmderMap.emplace('L', std::make_unique<TurnLeftCommand>());
+    // 建立操作 R 和右转指令的映射关系
+    cmderMap.emplace('R', std::make_unique<TurnRightCommand>());
+    // 建立操作 F 和加速指令的映射关系
+    cmderMap.emplace('F', std::make_unique<FastCommand>());
+
     for (const auto cmd : commands)
     {
-        // 声明一个 ICommand 类型的智能指针
-        std::unique_ptr<ICommand> cmder;
-
-        if (cmd == 'M')
+        // 根据操作查找表驱动
+        const auto it = cmderMap.find(cmd);
+        // 如果找到表驱动，执行操作对应的指令
+        if (it != cmderMap.end())
         {
-            // 智能指针指向子类 MoveCommand 实例
-            cmder = std::make_unique<MoveCommand>();
-        }
-        else if (cmd == 'L')
-        {
-            cmder = std::make_unique<TurnLeftCommand>();
-        }
-        else if (cmd == 'R')
-        {
-            cmder = std::make_unique<TurnRightCommand>();
-        }
-        else if (cmd == 'F')
-        {
-            cmder = std::make_unique<FastCommand>();
-        }
-
-        if (cmder)
-        {
-            // 多态：cmder 指向不同子类实例，调用不同的命令
-            cmder->DoOperate(poseHandler);
+            it->second->DoOperate(poseHandler);
         }
     }
 }
