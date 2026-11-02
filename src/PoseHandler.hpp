@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Direction.hpp"
 #include "Executor.hpp"
 
 namespace adas
 {
-/* 状态管理类：维护汽车的位置、朝向与加速状态 */
+/* 状态管理类：用 Point + Direction 表示姿态，并维护加速状态 */
 class PoseHandler final
 {
 public:
@@ -21,7 +22,8 @@ public:
     Pose Query(void) const noexcept;    // 查询当前位置
 
 private:
-    Pose pose;         // 当前位置
-    bool fast{false};  // 是否处于快速状态
+    Point point;              // 当前坐标
+    const Direction* facing;  // 当前朝向
+    bool fast{false};         // 是否处于快速状态
 };
 }  // namespace adas
