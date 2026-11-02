@@ -31,8 +31,9 @@ void ExecutorImpl::Execute(const std::string& commands) noexcept
     });
 }
 
-Executor* Executor::NewExecutor(const Pose& pose) noexcept
+Executor* Executor::NewExecutor(const Pose& pose, const ExecutorType executorType) noexcept
 {
+    (void)executorType;                            // 车型适配将在后续步骤实现
     return new (std::nothrow) ExecutorImpl(pose);  // 只在C++17下有效
 }
 }  // namespace adas

@@ -12,12 +12,21 @@ struct Pose
     char heading;  // 'N','S','E','W'代表四个方向
 };
 
+/* 车辆类型枚举 */
+enum class ExecutorType
+{
+    NORMAL,
+    SPORTS_CAR,
+    BUS,
+};
+
 /* 驾驶动作执行器接口 */
 class Executor
 {
 public:
     // Caller should delete *executor when it is no longer needed.
-    static Executor* NewExecutor(const Pose& pose = {0, 0, 'N'}) noexcept;
+    static Executor* NewExecutor(const Pose& pose = {0, 0, 'N'},
+                                 const ExecutorType executorType = ExecutorType::NORMAL) noexcept;
 
 public:
     // 默认构造函数
