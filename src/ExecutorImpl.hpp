@@ -32,6 +32,16 @@ private:
         }
     };
 
+    // 定义一个嵌套类 TurnLeftCommand，完成 TurnLeft 动作（L 指令）
+    class TurnLeftCommand final
+    {
+    public:
+        void DoOperate(ExecutorImpl& executor) const noexcept
+        {
+            executor.TurnLeft();
+        }
+    };
+
 private:
     void Move(void) noexcept;
     void TurnLeft(void) noexcept;
